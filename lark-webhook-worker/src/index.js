@@ -41,7 +41,7 @@ function toLarkFields(body) {
     'ชื่อผู้ติดตาม': Array.isArray(body.companions) ? body.companions.join(', ') : '',
     'มีอาการแพ้อาหาร': body.hasAllergy ? 'มี' : 'ไม่มี',
     'รายการที่แพ้': Array.isArray(body.allergies) ? body.allergies : [],
-    'รายละเอียดที่แพ้ (เพิ่มเติม)': body.allergyNote || '',
+    'รายละเอียดที่แพ้(เพิ่มเติม)': body.allergyNote || '',
     'รูปแบบอาหาร': body.diet || 'ทานได้ทุกอย่าง',
     'อาหารที่ไม่รับประทาน': Array.isArray(body.avoid) ? body.avoid : [],
     'หมายเหตุอาหารเพิ่มเติม': body.avoidNote || '',
