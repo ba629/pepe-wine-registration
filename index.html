@@ -56,11 +56,12 @@ body{
 }
 .hero h1 i{font-style:italic;color:var(--wine-2)}
 .hero .lede{color:var(--ink-2);font-size:15.5px;margin:16px 0 0;max-width:26ch;position:relative;z-index:2}
-.glass{position:absolute;right:-4px;bottom:-56px;width:150px;height:230px;z-index:1;opacity:.5}
+.glass{position:absolute;right:8px;top:14px;width:78px;height:120px;z-index:1;opacity:.32}
 .glass path,.glass line{stroke:var(--wine-2);fill:none;stroke-width:1.5}
-.when{display:flex;gap:40px;margin-top:30px;position:relative;z-index:2}
-.when span{display:block;color:var(--ink-3);font-size:13.5px;margin-bottom:2px}
-.when b{font-weight:400;font-size:19px}
+.when{display:flex;gap:24px;margin-top:26px;position:relative;z-index:2}
+.when > div{min-width:0}
+.when span{display:block;color:var(--ink-3);font-size:13px;margin-bottom:3px}
+.when b{font-weight:400;font-size:16.5px}
 
 /* ---------- info panels ---------- */
 .panel{background:var(--card);border-radius:var(--r-lg);margin-top:14px;padding:2px 20px;box-shadow:0 1px 2px rgba(27,20,24,.04)}
@@ -218,8 +219,7 @@ input:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{
     <p class="lede">ดินเนอร์จับคู่ไวน์แบบไพรเวท สำหรับลูกค้าคนสำคัญของ SUITCUBE</p>
     <svg class="glass" viewBox="0 0 150 230" aria-hidden="true">
       <path d="M25 18h100l-8 46a42 42 0 0 1-84 0z"/>
-      <line x1="30" y1="52" x2="120" y2="52"/>
-      <line x1="75" y1="150" x2="75" y2="212"/>
+      <line x1="75" y1="106" x2="75" y2="176"/>
     </svg>
     <div class="when">
       <div><span>วันที่</span><b id="fDate">ศุกร์ 2 ตุลาคม 2569</b></div>
@@ -507,7 +507,7 @@ function renderCompanions(){
   for(let i=0;i<need;i++){
     const inp = document.createElement('input');
     inp.type = 'text';
-    inp.placeholder = 'ชื่อผู้ติดตามคนที่ ' + (i+1);
+    inp.placeholder = 'ชื่อผู้ติดตาม';
     inp.value = kept[i] || '';
     inp.style.marginBottom = '8px';
     list.appendChild(inp);
