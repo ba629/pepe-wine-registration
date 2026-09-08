@@ -451,8 +451,11 @@ const CONFIG = {
   mapUrl    : 'https://maps.app.goo.gl/4hZrMaCYBn8J3DdW6',
   parkingUrl: 'https://maps.app.goo.gl/q2WMs5LTkgE8WZP47',
 
-  // Google Apps Script Webhook URL
-  scriptUrl : 'https://script.google.com/a/macros/suitcube.com/s/AKfycbwpeUxHC2voBuFZwL1gJBP8k7Bao03XKvsSMYDjb58y705ZwGmF468oGMagzdJKnFSd/exec'
+  // GitHub Actions relay → Lark Base. No server needed.
+  // repo: "owner/repo-name" of the repository hosting this page.
+  // token: fine-grained PAT scoped to THIS repo only, Contents: read & write.
+  githubRepo : 'REPLACE_OWNER/REPLACE_REPO',
+  githubToken: 'REPLACE_WITH_FINE_GRAINED_PAT'
 };
 
 function defaultFood(){ return { hasAllergy:false, allergies:[], allergyNote:'', diet:'ทานได้ทุกอย่าง', avoid:[], avoidNote:'' }; }
@@ -621,31 +624,19 @@ async function clearRecords(){
   mem.length = 0;
 }
 async function pushWebhook(rec){
-  if(!CONFIG.scriptUrl) return false;
-  try {
-    const payload = {
-      fullname: rec.name,
-      phone: rec.phone,
-      email: rec.email || '-',
-      attending: rec.attending,
-      guests: rec.guests || 1,
-      note: rec.note || '-'
-    };
-
-    await fetch(CONFIG.scriptUrl, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(payload)
+  if(!CONFIG.githubRepo || CONFIG.githubRepo.startsWith('REPLACE')) return false;
+  try{
+    const r = await fetch(`https://api.github.com/repos/${CONFIG.githubRepo}/dispatches`,{
+      method:'POST',
+      headers:{
+        'Accept':'application/vnd.github+json',
+        'Authorization':'Bearer ' + CONFIG.githubToken,
+        'Content-Type':'application/json'
+      },
+      body: JSON.stringify({ event_type:'wine-registration', client_payload: rec })
     });
-
-    rec.synced = true;
-    await saveRecord(rec);
-    return true;
-  } catch(e) {
-    console.error('Webhook Error:', e);
-    return false;
-  }
+    return r.status === 204;   // GitHub returns 204 No Content on success
+  }catch(e){ return false; }
 }
 
 /* ---------- submit ---------- */
