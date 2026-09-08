@@ -11,6 +11,23 @@
 
 const LARK_HOST = 'https://open.larksuite.com'; // use open.feishu.cn for a China-region Feishu app
 
+// Fixed event details — same for every guest, so this file never changes per request.
+// Keep in sync with CONFIG in index.html if the date/time/venue ever changes.
+const ICS_CONTENT = [
+  'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//SUITCUBE//An Evening with SUITCUBE//TH',
+  'CALSCALE:GREGORIAN', 'METHOD:PUBLISH',
+  'BEGIN:VEVENT', 'UID:an-evening-with-suitcube@pepe-bangkok',
+  'DTSTAMP:20260908T000000Z',
+  'DTSTART:20261002T110000Z', // 2026-10-02 18:00 +07:00
+  'DTEND:20261002T133000Z',   // 2026-10-02 20:30 +07:00
+  'SUMMARY:An Evening with SUITCUBE — PEPÉ Bangkok',
+  'LOCATION:PEPÉ Bangkok',
+  'DESCRIPTION:ที่จอดรถฟรี 2 จุด: หน้าร้าน PEPÉ Bangkok และอพาร์ตเมนต์ P.W.T. Mansion',
+  'URL:https://maps.app.goo.gl/4hZrMaCYBn8J3DdW6',
+  'BEGIN:VALARM', 'TRIGGER:-PT2H', 'ACTION:DISPLAY', 'DESCRIPTION:An Evening with SUITCUBE', 'END:VALARM',
+  'END:VEVENT', 'END:VCALENDAR',
+].join('\r\n');
+
 function cors(origin) {
   return {
     'Access-Control-Allow-Origin': origin,
@@ -70,6 +87,20 @@ async function createRecord(env, fields) {
 export default {
   async fetch(request, env) {
     const origin = env.ALLOWED_ORIGIN || '*';
+    const url = new URL(request.url);
+
+    // Plain https link to a real .ics file — works as a normal page navigation
+    // in every browser (not a JS trick), so it isn't blocked by in-app webviews
+    // or non-Safari iOS browsers the way a data: URI sometimes is.
+    if (request.method === 'GET' && url.pathname === '/event.ics') {
+      return new Response(ICS_CONTENT, {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/calendar; charset=utf-8',
+          'Content-Disposition': 'inline; filename="an-evening-with-suitcube.ics"',
+        },
+      });
+    }
 
     if (request.method === 'OPTIONS') {
       return new Response(null, { headers: cors(origin) });
