@@ -632,18 +632,16 @@ async function pushWebhook(rec){
       note: rec.note || '-'
     };
 
-    const r = await fetch(CONFIG.scriptUrl, {
+    await fetch(CONFIG.scriptUrl, {
       method: 'POST',
+      mode: 'no-cors',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
       body: JSON.stringify(payload)
     });
 
-    if (r.ok) {
-      rec.synced = true;
-      await saveRecord(rec);
-      return true;
-    }
-    return false;
+    rec.synced = true;
+    await saveRecord(rec);
+    return true;
   } catch(e) {
     console.error('Webhook Error:', e);
     return false;
