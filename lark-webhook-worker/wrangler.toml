@@ -1,0 +1,11 @@
+name = "wine-night-lark-webhook"
+main = "src/index.js"
+compatibility_date = "2026-01-01"
+
+# Plain (non-secret) values — safe to commit.
+# LARK_APP_ID / LARK_APP_SECRET are set separately as secrets (see README),
+# never written here or committed to git.
+[vars]
+LARK_BASE_TOKEN = "ZSNwbgpFXab6xjsdiA1lKCsagGg"   # from the Base URL: .../base/<this part>
+LARK_TABLE_ID   = "tblwRsu9OE5xw8hQ"          # from the table URL: ...?table=<this part>
+ALLOWED_ORIGIN  = "https://ba629.github.io"
