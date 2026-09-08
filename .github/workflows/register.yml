@@ -1,0 +1,32 @@
+name: Push Registration to Lark Base
+
+on:
+  repository_dispatch:
+    types: [register-user]
+
+jobs:
+  push-to-lark:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Lark Tenant Access Token
+        id: get_token
+        run: |
+          RESPONSE=$(curl -s -X POST "https://open.larksuite.com/open-apis/auth/v3/tenant_access_token/internal" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d "{\"app_id\": \"${{ secrets.LARK_APP_ID }}\", \"app_secret\": \"${{ secrets.LARK_APP_SECRET }}\"}")
+          
+          TOKEN=$(echo $RESPONSE | jq -r '.tenant_access_token')
+          echo "token=$TOKEN" >> $GITHUB_OUTPUT
+
+      - name: Create Record in Lark Base
+        run: |
+          curl -s -X POST "https://open.larksuite.com/open-apis/bitable/v1/apps/${{ secrets.LARK_BASE_TOKEN }}/tables/${{ secrets.LARK_TABLE_ID }}/records" \
+            -H "Authorization: Bearer ${{ steps.get_token.outputs.token }}" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d '{
+              "fields": {
+                "Full Name": "${{ github.event.client_payload.fullname }}",
+                "Phone": "${{ github.event.client_payload.phone }}",
+                "Email": "${{ github.event.client_payload.email }}"
+              }
+            }'
