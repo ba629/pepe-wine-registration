@@ -1,32 +1,75 @@
-name: Push Registration to Lark Base
+name: Sync registration to Lark Base
 
 on:
   repository_dispatch:
-    types: [register-user]
+    types: [wine-registration]
 
 jobs:
-  push-to-lark:
+  write-to-lark:
     runs-on: ubuntu-latest
     steps:
-      - name: Get Lark Tenant Access Token
-        id: get_token
+      - name: Create record in Lark Base
+        env:
+          LARK_APP_ID: ${{ secrets.LARK_APP_ID }}
+          LARK_APP_SECRET: ${{ secrets.LARK_APP_SECRET }}
+          LARK_BASE_TOKEN: ${{ secrets.LARK_BASE_TOKEN }}
+          LARK_TABLE_ID: ${{ secrets.LARK_TABLE_ID }}
+          PAYLOAD: ${{ toJSON(github.event.client_payload) }}
         run: |
-          RESPONSE=$(curl -s -X POST "https://open.larksuite.com/open-apis/auth/v3/tenant_access_token/internal" \
-            -H "Content-Type: application/json; charset=utf-8" \
-            -d "{\"app_id\": \"${{ secrets.LARK_APP_ID }}\", \"app_secret\": \"${{ secrets.LARK_APP_SECRET }}\"}")
-          
-          TOKEN=$(echo $RESPONSE | jq -r '.tenant_access_token')
-          echo "token=$TOKEN" >> $GITHUB_OUTPUT
+          node <<'EOF'
+          const HOST = 'https://open.larksuite.com'; // feishu.cn if China region
 
-      - name: Create Record in Lark Base
-        run: |
-          curl -s -X POST "https://open.larksuite.com/open-apis/bitable/v1/apps/${{ secrets.LARK_BASE_TOKEN }}/tables/${{ secrets.LARK_TABLE_ID }}/records" \
-            -H "Authorization: Bearer ${{ steps.get_token.outputs.token }}" \
-            -H "Content-Type: application/json; charset=utf-8" \
-            -d '{
-              "fields": {
-                "Full Name": "${{ github.event.client_payload.fullname }}",
-                "Phone": "${{ github.event.client_payload.phone }}",
-                "Email": "${{ github.event.client_payload.email }}"
-              }
-            }'
+          const body = JSON.parse(process.env.PAYLOAD);
+
+          async function main() {
+            // 1. auth
+            const authRes = await fetch(`${HOST}/open-apis/auth/v3/tenant_access_token/internal`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                app_id: process.env.LARK_APP_ID,
+                app_secret: process.env.LARK_APP_SECRET,
+              }),
+            });
+            const auth = await authRes.json();
+            if (!auth.tenant_access_token) throw new Error('auth failed: ' + JSON.stringify(auth));
+
+            // 2. map form payload to the Thai field names in the table
+            const attendMap = { yes: 'เข้าร่วม', no: 'ไม่สะดวก' };
+            const fields = {
+              'ชื่อ–นามสกุล': body.name || '',
+              'เบอร์โทร': body.phone || '',
+              'การเข้าร่วม': attendMap[body.attending] || body.attending || '',
+              'จำนวนผู้เข้าร่วม': Number(body.guests) || 0,
+              'ชื่อผู้ติดตาม': Array.isArray(body.companions) ? body.companions.join(', ') : '',
+              'มีอาการแพ้อาหาร': body.hasAllergy ? 'มี' : 'ไม่มี',
+              'รายการที่แพ้': Array.isArray(body.allergies) ? body.allergies : [],
+              'รายละเอียดที่แพ้ (เพิ่มเติม)': body.allergyNote || '',
+              'รูปแบบอาหาร': body.diet || 'ทานได้ทุกอย่าง',
+              'อาหารที่ไม่รับประทาน': Array.isArray(body.avoid) ? body.avoid : [],
+              'หมายเหตุอาหารเพิ่มเติม': body.avoidNote || '',
+              'รายการที่แพ้ (ผู้ติดตาม)': Array.isArray(body.allergiesCompanion) ? body.allergiesCompanion : [],
+              'รายละเอียดที่แพ้ (ผู้ติดตาม)': body.allergyNoteCompanion || '',
+              'รูปแบบอาหาร (ผู้ติดตาม)': body.dietCompanion || '',
+              'อาหารที่ไม่รับประทาน (ผู้ติดตาม)': Array.isArray(body.avoidCompanion) ? body.avoidCompanion : [],
+              'หมายเหตุอาหารเพิ่มเติม (ผู้ติดตาม)': body.avoidNoteCompanion || '',
+              'ข้อความถึงผู้จัดงาน': body.note || '',
+            };
+
+            // 3. create record
+            const url = `${HOST}/open-apis/bitable/v1/apps/${process.env.LARK_BASE_TOKEN}/tables/${process.env.LARK_TABLE_ID}/records`;
+            const res = await fetch(url, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${auth.tenant_access_token}`,
+              },
+              body: JSON.stringify({ fields }),
+            });
+            const data = await res.json();
+            if (data.code !== 0) throw new Error('create record failed: ' + JSON.stringify(data));
+            console.log('OK — record created for', body.name);
+          }
+
+          main().catch(err => { console.error(err); process.exit(1); });
+          EOF
