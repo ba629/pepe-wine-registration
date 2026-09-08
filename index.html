@@ -515,10 +515,10 @@ function renderCompanions(){
   $('#companionBox').classList.toggle('open', need > 0);
 }
 function setGuests(n){
-  state.guests = Math.min(10, Math.max(1, n));
+  state.guests = Math.min(2, Math.max(1, n));
   $('#guests').textContent = state.guests;
   $('#minus').disabled = state.guests <= 1;
-  $('#plus').disabled  = state.guests >= 10;
+  $('#plus').disabled  = state.guests >= 2;
   renderCompanions();
 }
 $('#minus').addEventListener('click',()=>setGuests(state.guests-1));
