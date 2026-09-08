@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ลงทะเบียนร่วมงาน An Evening with SUITCUBE — PEPÉ Bangkok</title>
+<meta name="theme-color" content="#FBF9F9">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=IBM+Plex+Sans+Thai:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FBF9F9;
+  --card:#FFFFFF;
+  --ink:#1B1418;
+  --ink-2:#6E5F64;
+  --ink-3:#9C8C91;
+  --wine:#5E1421;
+  --wine-2:#7A2233;
+  --rose:#B4818C;
+  --blush:#F3DDE1;
+  --line:rgba(27,20,24,.09);
+  --field:#F5F1F2;
+  --danger:#B3261E;
+  --r-lg:26px; --r-md:18px; --r-sm:13px;
+  --ease:cubic-bezier(.32,.72,0,1);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg);color:var(--ink);
+  font-family:'IBM Plex Sans Thai',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  font-size:16px;line-height:1.6;font-weight:300;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+.serif{font-family:'Playfair Display',Georgia,serif}
+.wrap{max-width:560px;margin:0 auto;padding:0 20px}
+.brand{font-size:16px;letter-spacing:.06em;font-weight:400;padding:22px 0 14px;margin:0}
+
+/* ---------- screens ---------- */
+.screen{display:none}
+.screen.on{display:block;animation:fade .28s var(--ease)}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ---------- hero ---------- */
+.hero{
+  position:relative;overflow:hidden;border-radius:var(--r-lg);
+  background:linear-gradient(138deg,#F5DBE1 0%,#F7EBEE 42%,#FDFAFA 100%);
+  padding:28px 24px 26px;
+}
+.hero .eyebrow{color:var(--rose);font-size:14.5px;margin:0 0 10px;position:relative;z-index:2}
+.hero h1{
+  font-family:'Playfair Display',Georgia,serif;
+  font-size:clamp(46px,13.5vw,62px);font-weight:400;line-height:1.02;
+  margin:0;letter-spacing:-.005em;position:relative;z-index:2;
+}
+.hero h1 i{font-style:italic;color:var(--wine-2)}
+.hero .lede{color:var(--ink-2);font-size:15.5px;margin:16px 0 0;max-width:26ch;position:relative;z-index:2}
+.glass{position:absolute;right:-4px;bottom:-56px;width:150px;height:230px;z-index:1;opacity:.5}
+.glass path,.glass line{stroke:var(--wine-2);fill:none;stroke-width:1.5}
+.when{display:flex;gap:40px;margin-top:30px;position:relative;z-index:2}
+.when span{display:block;color:var(--ink-3);font-size:13.5px;margin-bottom:2px}
+.when b{font-weight:400;font-size:19px}
+
+/* ---------- info panels ---------- */
+.panel{background:var(--card);border-radius:var(--r-lg);margin-top:14px;padding:2px 20px;box-shadow:0 1px 2px rgba(27,20,24,.04)}
+.item{display:flex;gap:14px;padding:18px 0;border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.item > svg{width:20px;height:20px;flex:none;margin-top:3px;stroke:var(--wine-2);fill:none;stroke-width:1.4}
+.item h3{margin:0 0 3px;font-size:13.5px;font-weight:400;color:var(--ink-3)}
+.item p{margin:0;font-size:16px}
+.item a{color:var(--wine-2);text-decoration:none;border-bottom:1px solid rgba(122,34,51,.35);font-size:15.5px}
+.park{list-style:none;margin:8px 0 0;padding:0}
+.park li{display:flex;gap:10px;padding:6px 0;font-size:15.5px;align-items:baseline}
+.park li::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--rose);flex:none;transform:translateY(-3px)}
+.park a{font-size:14.5px}
+
+/* ---------- sticky cta ---------- */
+.dock{
+  position:sticky;bottom:0;z-index:20;margin-top:18px;
+  padding:16px 0 calc(16px + env(safe-area-inset-bottom));
+  background:linear-gradient(to top,var(--bg) 62%,rgba(251,249,249,0));
+}
+.cta{
+  width:100%;min-height:56px;border:0;border-radius:16px;cursor:pointer;
+  background:var(--wine);color:#fff;font:inherit;font-size:16.5px;font-weight:500;
+  box-shadow:0 8px 24px rgba(94,20,33,.22);
+  transition:transform .12s var(--ease),opacity .2s var(--ease);
+  display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.cta:active{transform:scale(.985)}
+.cta:disabled{opacity:.55;cursor:default;box-shadow:none}
+.spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.foot{text-align:center;color:var(--ink-3);font-size:12.5px;padding:2px 0 26px}
+
+/* ---------- form ---------- */
+.nav{display:flex;align-items:center;padding:12px 0 6px}
+.back{display:flex;align-items:center;gap:4px;min-height:44px;padding:0 10px 0 0;border:0;background:none;color:var(--wine-2);font:inherit;font-size:16px;cursor:pointer}
+.back svg{width:19px;height:19px;stroke:currentColor;fill:none;stroke-width:1.8}
+.formcard{background:var(--card);border-radius:var(--r-lg);padding:24px 20px 26px;box-shadow:0 1px 2px rgba(27,20,24,.04)}
+.formcard h2{font-family:'Playfair Display',Georgia,serif;font-size:30px;font-weight:400;margin:0 0 24px}
+.field{margin-bottom:20px}
+.field > label,.legend{display:block;font-size:15px;margin-bottom:9px}
+.req{color:var(--wine-2)}
+.hint{font-size:13px;color:var(--ink-3);margin:7px 0 0}
+input[type=text],input[type=tel],textarea{
+  width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--field);
+  border:1px solid transparent;border-radius:var(--r-sm);padding:13px 14px;min-height:52px;
+  transition:border-color .18s var(--ease),background .18s var(--ease);
+}
+textarea{min-height:86px;resize:vertical;line-height:1.55}
+input::placeholder,textarea::placeholder{color:#B9ABAF}
+input:focus,textarea:focus{outline:none;background:#fff;border-color:var(--rose)}
+input:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--wine-2);outline-offset:2px}
+.err{display:none;color:var(--danger);font-size:13px;margin-top:7px}
+.field.invalid input{border-color:var(--danger);background:#FDF4F3}
+.field.invalid .err{display:block}
+
+.seg{display:flex;gap:4px;background:var(--field);border-radius:15px;padding:4px}
+.seg button{
+  flex:1;min-height:46px;border:0;border-radius:11px;background:transparent;color:var(--ink-2);
+  font:inherit;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;
+  transition:background .2s var(--ease),color .2s var(--ease),box-shadow .2s var(--ease);
+}
+.seg button svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.7}
+.seg button[aria-pressed=true]{background:var(--wine);color:#fff}
+.seg.quiet button[aria-pressed=true]{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(27,20,24,.12)}
+
+.stepper{display:flex;align-items:center;gap:14px}
+.stepper button{
+  width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:#fff;
+  color:var(--ink);font-size:21px;line-height:1;cursor:pointer;transition:background .18s var(--ease),transform .12s var(--ease);
+}
+.stepper button:active{transform:scale(.94);background:var(--field)}
+.stepper button:disabled{opacity:.35;cursor:default}
+.stepper output{font-family:'Playfair Display',serif;font-size:30px;min-width:48px;text-align:center}
+.stepper .unit{font-size:14.5px;color:var(--ink-3)}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{
+  min-height:42px;padding:9px 15px;border-radius:999px;cursor:pointer;
+  border:1px solid var(--line);background:#fff;color:var(--ink-2);font:inherit;font-size:14.5px;
+  transition:all .18s var(--ease);
+}
+.chip[aria-pressed=true]{border-color:var(--wine-2);background:#FBEFF1;color:var(--wine)}
+.chip[aria-pressed=true]::before{content:'✓ '}
+.subgroup + .subgroup{margin-top:16px}
+.subgroup > span{display:block;font-size:13px;color:var(--ink-3);margin-bottom:8px}
+.reveal{overflow:hidden;max-height:0;opacity:0;transition:max-height .34s var(--ease),opacity .24s var(--ease),margin .34s var(--ease)}
+.reveal.open{max-height:560px;opacity:1;margin-top:14px}
+
+/* ---------- confirmation sheet ---------- */
+.scrim{
+  position:fixed;inset:0;z-index:60;background:rgba(27,20,24,.42);
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  opacity:0;pointer-events:none;transition:opacity .3s var(--ease);
+  display:flex;align-items:flex-end;justify-content:center;
+}
+.scrim.show{opacity:1;pointer-events:auto}
+.sheet{
+  width:100%;max-width:560px;max-height:92dvh;overflow-y:auto;background:var(--card);
+  border-radius:28px 28px 0 0;padding:10px 22px calc(24px + env(safe-area-inset-bottom));
+  transform:translateY(100%);transition:transform .42s var(--ease);
+}
+.scrim.show .sheet{transform:translateY(0)}
+.grabber{width:38px;height:4px;border-radius:2px;background:rgba(27,20,24,.16);margin:0 auto 20px}
+.tick{width:60px;height:60px;border-radius:50%;margin:4px auto 16px;display:grid;place-items:center;background:var(--blush)}
+.tick svg{width:27px;height:27px;stroke:var(--wine);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:32;stroke-dashoffset:32;animation:draw .5s .12s var(--ease) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.sheet h2{font-family:'Playfair Display',serif;font-size:29px;font-weight:400;text-align:center;margin:0 0 6px}
+.sheet .sub{text-align:center;color:var(--ink-2);font-size:14.5px;margin:0 0 22px}
+.recap{background:var(--field);border-radius:var(--r-md);padding:14px 16px}
+.recap div{display:flex;justify-content:space-between;gap:16px;font-size:14.5px;padding:5px 0}
+.recap div span:first-child{color:var(--ink-3);flex:none}
+.recap div span:last-child{text-align:right}
+.sheet h3{font-size:13.5px;font-weight:400;color:var(--ink-3);margin:22px 0 10px}
+.act{
+  display:flex;align-items:center;gap:13px;width:100%;text-align:left;min-height:58px;
+  padding:12px 16px;margin-bottom:9px;border:1px solid var(--line);border-radius:var(--r-md);
+  background:#fff;color:var(--ink);font:inherit;font-size:15.5px;cursor:pointer;text-decoration:none;
+  transition:background .18s var(--ease),transform .12s var(--ease);
+}
+.act:active{transform:scale(.985);background:var(--field)}
+.act > svg{width:21px;height:21px;flex:none;stroke:var(--wine-2);fill:none;stroke-width:1.4}
+.act small{display:block;color:var(--ink-3);font-size:13px;line-height:1.4}
+.act .chev{width:16px;height:16px;margin-left:auto;stroke:#C9BCC0}
+.close{width:100%;min-height:52px;margin-top:18px;border:0;border-radius:16px;background:var(--field);color:var(--ink);font:inherit;font-size:15.5px;cursor:pointer}
+
+/* ---------- admin ---------- */
+.stat{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}
+.stat div{background:var(--card);border-radius:var(--r-md);padding:14px;text-align:center;box-shadow:0 1px 2px rgba(27,20,24,.04)}
+.stat b{display:block;font-family:'Playfair Display',serif;font-size:30px;font-weight:400}
+.stat span{font-size:12.5px;color:var(--ink-3)}
+.tools{display:flex;gap:9px;margin-bottom:16px}
+.tools button{flex:1;min-height:46px;border-radius:13px;border:1px solid var(--line);background:#fff;color:var(--ink);font:inherit;font-size:14px;cursor:pointer}
+.rowlist{display:grid;gap:10px;padding-bottom:30px}
+.row{background:var(--card);border-radius:var(--r-md);padding:14px 16px;font-size:14.5px;box-shadow:0 1px 2px rgba(27,20,24,.04)}
+.row .top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.row .tag{font-size:12px;padding:3px 10px;border-radius:999px;background:var(--blush);color:var(--wine);flex:none}
+.row .tag.no{background:var(--field);color:var(--ink-3)}
+.row .meta{color:var(--ink-3);font-size:13px;margin-top:4px}
+.empty{text-align:center;color:var(--ink-3);padding:40px 0;font-size:14.5px}
+
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms !important;transition-duration:.01ms !important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<p class="brand serif">SUITCUBE</p>
+
+<!-- ============ screen 1: invitation ============ -->
+<section class="screen on" id="screen-landing">
+  <header class="hero">
+    <p class="eyebrow">ขอเรียนเชิญร่วมงาน</p>
+    <h1>An Evening<br>with <i>SUITCUBE</i></h1>
+    <p class="lede">ดินเนอร์จับคู่ไวน์แบบไพรเวท สำหรับลูกค้าคนสำคัญของ SUITCUBE</p>
+    <svg class="glass" viewBox="0 0 150 230" aria-hidden="true">
+      <path d="M25 18h100l-8 46a42 42 0 0 1-84 0z"/>
+      <line x1="30" y1="52" x2="120" y2="52"/>
+      <line x1="75" y1="150" x2="75" y2="212"/>
+    </svg>
+    <div class="when">
+      <div><span>วันที่</span><b id="fDate">ศุกร์ 2 ตุลาคม 2569</b></div>
+      <div><span>เวลา</span><b id="fTime">18:00 – 20:30 น.</b></div>
+    </div>
+  </header>
+
+  <div class="panel">
+    <div class="item">
+      <svg viewBox="0 0 24 24"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/></svg>
+      <div><h3>สถานที่</h3><p>PEPÉ Bangkok</p><a id="fMap" href="#" target="_blank" rel="noopener">เปิดใน Google Maps</a></div>
+    </div>
+    <div class="item">
+      <svg viewBox="0 0 24 24"><path d="M8 3h8l-.7 5.2A4.4 4.4 0 0 1 12 12a4.4 4.4 0 0 1-3.3-3.8zM12 12v8M8.5 20h7"/></svg>
+      <div><h3>รูปแบบงาน</h3><p>Sit-Down Dinner</p><p style="color:var(--ink-2);font-size:14.5px;margin-top:4px">เสิร์ฟอาหารแบบคอร์ส พร้อม Wine Pairing ที่คัดสรรให้เข้ากับแต่ละเมนูอย่างลงตัว ในบรรยากาศแบบ Private Dining</p></div>
+    </div>
+    <div class="item">
+      <svg viewBox="0 0 24 24"><path d="M12 20.5s-7.5-4.6-7.5-9.7A4.2 4.2 0 0 1 12 8.1a4.2 4.2 0 0 1 7.5 2.7c0 5.1-7.5 9.7-7.5 9.7z"/></svg>
+      <div><h3>เกี่ยวกับงาน</h3><p style="font-size:15px">ค่ำคืนแห่งการขอบคุณ ผ่านอาหาร เครื่องดื่ม และช่วงเวลาพิเศษที่ได้ร่วมพูดคุยกับผู้บริหารของ SUITCUBE</p></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="item">
+      <svg viewBox="0 0 24 24"><path d="M5 17h14M6.5 17v2M17.5 17v2M4 13l1.6-4.6A2 2 0 0 1 7.5 7h9a2 2 0 0 1 1.9 1.4L20 13v4H4z"/><circle cx="7.5" cy="15" r=".9" fill="currentColor" stroke="none"/><circle cx="16.5" cy="15" r=".9" fill="currentColor" stroke="none"/></svg>
+      <div style="min-width:0">
+        <h3>ที่จอดรถ</h3>
+        <p>บริการที่จอดรถฟรี 2 จุด</p>
+        <ul class="park">
+          <li>บริเวณด้านหน้าร้าน PEPÉ Bangkok&nbsp;<a id="fParkFront" href="#" target="_blank" rel="noopener">แผนที่</a></li>
+          <li>อพาร์ตเมนต์ P.W.T. Mansion&nbsp;<a id="fPark" href="#" target="_blank" rel="noopener">แผนที่</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="dock"><button class="cta" id="goForm" type="button">ลงทะเบียนเข้าร่วมงาน</button></div>
+</section>
+
+<!-- ============ screen 2: form ============ -->
+<section class="screen" id="screen-form">
+  <div class="nav">
+    <button class="back" type="button" id="goBack"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" stroke-linecap="round" stroke-linejoin="round"/></svg>กลับ</button>
+  </div>
+
+  <form class="formcard" id="form" novalidate>
+    <h2>ลงทะเบียน</h2>
+
+    <div class="field" id="fldName">
+      <label for="name">ชื่อ–นามสกุล <span class="req">*</span></label>
+      <input type="text" id="name" autocomplete="name" required>
+      <p class="err">กรุณากรอกชื่อ–นามสกุล</p>
+    </div>
+
+    <div class="field" id="fldPhone">
+      <label for="phone">เบอร์โทรศัพท์ <span class="req">*</span></label>
+      <input type="tel" id="phone" inputmode="numeric" autocomplete="tel" placeholder="08X-XXX-XXXX" maxlength="12" required>
+      <p class="hint">ใช้ยืนยันที่นั่งและแจ้งข่าวสารของงานเท่านั้น</p>
+      <p class="err">กรุณากรอกเบอร์โทรให้ครบ 10 หลัก</p>
+    </div>
+
+    <div class="field">
+      <span class="legend">การเข้าร่วมงาน <span class="req">*</span></span>
+      <div class="seg" role="group" aria-label="ยืนยันการเข้าร่วมงาน">
+        <button type="button" data-attend="yes" aria-pressed="true">
+          <svg viewBox="0 0 24 24"><path d="M4 12.5l5 5L20 6.5" stroke-linecap="round" stroke-linejoin="round"/></svg>เข้าร่วม</button>
+        <button type="button" data-attend="no" aria-pressed="false">
+          <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>ไม่สะดวก</button>
+      </div>
+    </div>
+
+    <div id="attendBlock">
+      <div class="field">
+        <span class="legend">จำนวนผู้เข้าร่วม (รวมตัวท่าน)</span>
+        <div class="stepper">
+          <button type="button" id="minus" aria-label="ลดจำนวน">−</button>
+          <output id="guests" aria-live="polite">1</output>
+          <button type="button" id="plus" aria-label="เพิ่มจำนวน">+</button>
+          <span class="unit">ท่าน</span>
+        </div>
+        <div class="reveal" id="companionBox">
+          <p class="hint" style="margin:0 0 10px">ชื่อผู้ติดตาม</p>
+          <div id="companionList"></div>
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="legend">มีอาการแพ้อาหารหรือไม่ <span class="req">*</span></span>
+        <div class="seg quiet" role="group" aria-label="แพ้อาหาร">
+          <button type="button" data-allergy="no" aria-pressed="true">ไม่มี</button>
+          <button type="button" data-allergy="yes" aria-pressed="false">มี</button>
+        </div>
+        <div class="reveal" id="allergyBox">
+          <p class="hint" style="margin:0 0 10px">เลือกรายการที่แพ้ หรือพิมพ์เพิ่มเติมด้านล่าง</p>
+          <div class="chips" id="allergyChips">
+            <button type="button" class="chip" aria-pressed="false">อาหารทะเล</button>
+            <button type="button" class="chip" aria-pressed="false">กุ้ง / ปู</button>
+            <button type="button" class="chip" aria-pressed="false">หอย</button>
+            <button type="button" class="chip" aria-pressed="false">ถั่ว</button>
+            <button type="button" class="chip" aria-pressed="false">นม / แลคโตส</button>
+            <button type="button" class="chip" aria-pressed="false">ไข่</button>
+            <button type="button" class="chip" aria-pressed="false">กลูเตน / แป้งสาลี</button>
+            <button type="button" class="chip" aria-pressed="false">ผงชูรส</button>
+          </div>
+          <textarea id="allergyNote" style="margin-top:12px" placeholder="ระบุเพิ่มเติม เช่น แพ้ซัลไฟต์ในไวน์ขาว หรือแพ้รุนแรงต้องเลี่ยงการปนเปื้อน"></textarea>
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="legend">รูปแบบอาหาร</span>
+        <div class="chips" id="dietChips">
+          <button type="button" class="chip" aria-pressed="true">ทานได้ทุกอย่าง</button>
+          <button type="button" class="chip" aria-pressed="false">มังสวิรัติ</button>
+          <button type="button" class="chip" aria-pressed="false">เจ</button>
+          <button type="button" class="chip" aria-pressed="false">ฮาลาล</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="legend">อาหารที่ไม่รับประทาน</span>
+        <p class="hint" style="margin:0 0 14px">เลือกได้มากกว่าหนึ่งรายการ</p>
+        <div class="chips" id="avoidChips">
+          <button type="button" class="chip" aria-pressed="false">เนื้อวัว</button>
+          <button type="button" class="chip" aria-pressed="false">เนื้อหมู</button>
+          <button type="button" class="chip" aria-pressed="false">เนื้อแปรรูป</button>
+          <button type="button" class="chip" aria-pressed="false">เครื่องใน</button>
+          <button type="button" class="chip" aria-pressed="false">อาหารทะเล</button>
+          <button type="button" class="chip" aria-pressed="false">ของดิบ</button>
+          <button type="button" class="chip" aria-pressed="false">นม / ชีส</button>
+          <button type="button" class="chip" aria-pressed="false">ไข่</button>
+          <button type="button" class="chip" aria-pressed="false">ถั่ว</button>
+        </div>
+        <textarea id="avoidNote" style="margin-top:16px" placeholder="ระบุเพิ่มเติม (ถ้ามี)"></textarea>
+      </div>
+    </div>
+
+    <div class="field" style="margin-bottom:0">
+      <label for="note">ข้อความถึงผู้จัดงาน</label>
+      <textarea id="note" placeholder="เช่น มาถึงช้ากว่าเวลานัด หรือขอที่นั่งติดกัน"></textarea>
+    </div>
+  </form>
+
+  <div class="dock"><button class="cta" id="submitBtn" type="button">ยืนยันการลงทะเบียน</button></div>
+  <p class="foot">ทีมงานจะติดต่อกลับเพื่อยืนยันที่นั่งอีกครั้ง</p>
+</section>
+
+<!-- ============ screen 3: admin (#admin) ============ -->
+<section class="screen" id="screen-admin">
+  <h2 class="serif" style="font-size:28px;font-weight:400;margin:6px 0 2px">รายชื่อผู้ลงทะเบียน</h2>
+  <p class="hint" style="margin:0">ข้อมูลที่บันทึกในเครื่องนี้ · ออกจากหน้านี้โดยลบ #admin ออกจาก URL</p>
+  <div class="stat">
+    <div><b id="stTotal">0</b><span>ลงทะเบียน</span></div>
+    <div><b id="stGuest">0</b><span>จำนวนที่นั่ง</span></div>
+    <div><b id="stAllergy">0</b><span>แจ้งแพ้อาหาร</span></div>
+  </div>
+  <div class="tools">
+    <button type="button" id="btnCsv">ดาวน์โหลด CSV</button>
+    <button type="button" id="btnResync">ส่งซ้ำที่ค้าง</button>
+    <button type="button" id="btnClear">ล้างข้อมูล</button>
+  </div>
+  <div class="rowlist" id="rows"></div>
+</section>
+</div>
+
+<!-- confirmation sheet -->
+<div class="scrim" id="scrim" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="sheet">
+    <div class="grabber"></div>
+    <div class="tick"><svg viewBox="0 0 24 24"><path d="M4 12.5l5.2 5.2L20 6.8"/></svg></div>
+    <h2 id="sheetTitle">ลงทะเบียนเรียบร้อย</h2>
+    <p class="sub" id="sheetSub"></p>
+    <div class="recap" id="recap"></div>
+
+    <div id="goingOnly">
+      <h3>บันทึกวันงานลงปฏิทิน</h3>
+      <a class="act" id="calAuto" href="#" style="border-color:var(--wine-2);background:#FBEFF1">
+        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M8 3v4M16 3v4M3 10h18M12 13v5M9.5 15.5h5"/></svg>
+        <div id="calAutoLabel">เพิ่มลงปฏิทิน<small>ระบบเลือกวิธีที่เหมาะกับเครื่องคุณให้แล้ว</small></div>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M9 5l7 7-7 7" stroke-linecap="round"/></svg>
+      </a>
+      <p class="hint" style="margin:2px 0 14px">หรือเลือกเองด้านล่าง</p>
+      <a class="act" id="gcal" href="#">
+        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M8 3v4M16 3v4M3 10h18M12 13v5M9.5 15.5h5"/></svg>
+        <div>เพิ่มลง Google Calendar<small>เปิดหน้านี้เพื่อเพิ่มลงปฏิทิน</small></div>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M9 5l7 7-7 7" stroke-linecap="round"/></svg>
+      </a>
+      <a class="act" id="icsBtn" href="#">
+        <svg viewBox="0 0 24 24"><path d="M12 4v11M8 11.5l4 4 4-4M4.5 19.5h15"/></svg>
+        <div id="icsLabel">บันทึกลง Apple Calendar<small>สำหรับ iPhone และ iPad</small></div>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M9 5l7 7-7 7" stroke-linecap="round"/></svg>
+      </a>
+      <p class="hint" id="webviewHint" style="display:none">หากกดแล้วไม่ขึ้นหน้าปฏิทิน ให้แตะเมนู ⋯ แล้วเลือก "เปิดใน Safari" หรือ "เปิดใน Chrome" ก่อนกดอีกครั้ง</p>
+
+      <h3>การเดินทาง</h3>
+      <a class="act" id="mapBtn" href="#" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M12 21s7-6.1 7-11a7 7 0 1 0-14 0c0 4.9 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/></svg>
+        <div>PEPÉ Bangkok<small>เปิดเส้นทางใน Google Maps</small></div>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M9 5l7 7-7 7" stroke-linecap="round"/></svg>
+      </a>
+
+      <h3>ที่จอดรถฟรี 2 จุด</h3>
+      <a class="act" id="parkFrontBtn" href="#" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M5 17h14M6.5 17v2M17.5 17v2M4 13l1.6-4.6A2 2 0 0 1 7.5 7h9a2 2 0 0 1 1.9 1.4L20 13v4H4z"/></svg>
+        <div>ด้านหน้าร้าน PEPÉ Bangkok<small>จอดได้ทันทีเมื่อมาถึง</small></div>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M9 5l7 7-7 7" stroke-linecap="round"/></svg>
+      </a>
+      <a class="act" id="parkBtn" href="#" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M4.5 20V8.5L12 4l7.5 4.5V20zM9.5 20v-5h5v5"/></svg>
+        <div>อพาร์ตเมนต์ P.W.T. Mansion<small>เปิดแผนที่จุดจอดรถ</small></div>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M9 5l7 7-7 7" stroke-linecap="round"/></svg>
+      </a>
+    </div>
+
+    <button class="close" id="closeSheet" type="button">เสร็จสิ้น</button>
+  </div>
+</div>
+
+<script>
+/* ---------- config: edit here ---------- */
+const CONFIG = {
+  eventName : 'An Evening with SUITCUBE — PEPÉ Bangkok',
+  dateText  : 'ศุกร์ 2 ตุลาคม 2569',
+  timeText  : '18:00 – 20:30 น.',
+  startISO  : '2026-10-02T18:00:00+07:00',
+  endISO    : '2026-10-02T20:30:00+07:00',
+  venue     : 'PEPÉ Bangkok',
+  mapUrl    : 'https://maps.app.goo.gl/4hZrMaCYBn8J3DdW6',
+  parkingUrl: 'https://maps.app.goo.gl/q2WMs5LTkgE8WZP47',
+
+  // GitHub Actions relay → Lark Base. No server needed.
+  // repo: "owner/repo-name" of the repository hosting this page.
+  // token: fine-grained PAT scoped to THIS repo only, Contents: read & write.
+  githubRepo : 'REPLACE_OWNER/REPLACE_REPO',
+  githubToken: 'REPLACE_WITH_FINE_GRAINED_PAT'
+};
+
+const state = { attending:'yes', hasAllergy:false, guests:1, diet:'ทานได้ทุกอย่าง' };
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+$('#fDate').textContent = CONFIG.dateText;
+$('#fTime').textContent = CONFIG.timeText;
+$('#fMap').href = CONFIG.mapUrl;
+$('#fParkFront').href = CONFIG.mapUrl;
+$('#mapBtn').href = CONFIG.mapUrl;
+$('#parkFrontBtn').href = CONFIG.mapUrl;
+$('#fPark').href = CONFIG.parkingUrl;
+$('#parkBtn').href = CONFIG.parkingUrl;
+
+/* ---------- screen router ---------- */
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on', s.id === id));
+  window.scrollTo({top:0});
+}
+$('#goForm').addEventListener('click',()=>show('screen-form'));
+$('#goBack').addEventListener('click',()=>show('screen-landing'));
+
+/* ---------- segmented ---------- */
+function bindSeg(sel, fn){
+  document.querySelectorAll(sel).forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll(sel).forEach(b=>b.setAttribute('aria-pressed','false'));
+      btn.setAttribute('aria-pressed','true');
+      fn(btn);
+    });
+  });
+}
+bindSeg('[data-attend]', b=>{
+  state.attending = b.dataset.attend;
+  const on = state.attending === 'yes';
+  $('#attendBlock').style.display = on ? '' : 'none';
+  $('#submitBtn').textContent = on ? 'ยืนยันการลงทะเบียน' : 'ส่งคำตอบ';
+});
+bindSeg('[data-allergy]', b=>{
+  state.hasAllergy = b.dataset.allergy === 'yes';
+  $('#allergyBox').classList.toggle('open', state.hasAllergy);
+});
+
+/* ---------- stepper ---------- */
+function renderCompanions(){
+  const need = state.guests - 1;
+  const list = $('#companionList');
+  const kept = [...list.querySelectorAll('input')].map(i=>i.value);
+  list.innerHTML = '';
+  for(let i=0;i<need;i++){
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.placeholder = 'ชื่อผู้ติดตามคนที่ ' + (i+1);
+    inp.value = kept[i] || '';
+    inp.style.marginBottom = '8px';
+    list.appendChild(inp);
+  }
+  $('#companionBox').classList.toggle('open', need > 0);
+}
+function setGuests(n){
+  state.guests = Math.min(10, Math.max(1, n));
+  $('#guests').textContent = state.guests;
+  $('#minus').disabled = state.guests <= 1;
+  $('#plus').disabled  = state.guests >= 10;
+  renderCompanions();
+}
+$('#minus').addEventListener('click',()=>setGuests(state.guests-1));
+$('#plus').addEventListener('click',()=>setGuests(state.guests+1));
+setGuests(1);
+
+/* ---------- chips + phone mask ---------- */
+document.querySelectorAll('.chip').forEach(c=>{
+  if(c.closest('#dietChips')) return;   // diet is single-select, handled below
+  c.addEventListener('click',()=>c.setAttribute('aria-pressed', c.getAttribute('aria-pressed')==='true'?'false':'true'));
+});
+document.querySelectorAll('#dietChips .chip').forEach(c=>{
+  c.addEventListener('click',()=>{
+    document.querySelectorAll('#dietChips .chip').forEach(x=>x.setAttribute('aria-pressed','false'));
+    c.setAttribute('aria-pressed','true');
+    state.diet = c.textContent.trim();
+  });
+});
+const picked = id => [...document.querySelectorAll('#'+id+' .chip[aria-pressed=true]')].map(c=>c.textContent.trim());
+
+$('#phone').addEventListener('input', e=>{
+  const d = e.target.value.replace(/\D/g,'').slice(0,10);
+  e.target.value = d.length>6 ? `${d.slice(0,3)}-${d.slice(3,6)}-${d.slice(6)}`
+                 : d.length>3 ? `${d.slice(0,3)}-${d.slice(3)}` : d;
+});
+
+/* ---------- storage ---------- */
+const mem = [];
+const hasStore = typeof window.storage !== 'undefined' && window.storage;
+
+async function saveRecord(rec){
+  if(hasStore){
+    try{ await window.storage.set('reg:'+rec.id, JSON.stringify(rec), false); return true; }catch(e){}
+  }
+  const i = mem.findIndex(r=>r.id===rec.id);
+  if(i>-1) mem[i]=rec; else mem.push(rec);
+  return true;
+}
+async function listRecords(){
+  if(hasStore){
+    try{
+      const {keys} = await window.storage.list('reg:', false);
+      const out = [];
+      for(const k of keys){
+        try{ const r = await window.storage.get(k, false); if(r) out.push(JSON.parse(r.value)); }catch(e){}
+      }
+      return out.sort((a,b)=>b.ts.localeCompare(a.ts));
+    }catch(e){}
+  }
+  return [...mem].reverse();
+}
+async function clearRecords(){
+  if(hasStore){
+    try{ const {keys} = await window.storage.list('reg:', false);
+      for(const k of keys) await window.storage.delete(k, false);
+    }catch(e){}
+  }
+  mem.length = 0;
+}
+async function pushWebhook(rec){
+  if(!CONFIG.githubRepo || CONFIG.githubRepo.startsWith('REPLACE')) return false;
+  try{
+    const r = await fetch(`https://api.github.com/repos/${CONFIG.githubRepo}/dispatches`,{
+      method:'POST',
+      headers:{
+        'Accept':'application/vnd.github+json',
+        'Authorization':'Bearer ' + CONFIG.githubToken,
+        'Content-Type':'application/json'
+      },
+      body: JSON.stringify({ event_type:'wine-registration', client_payload: rec })
+    });
+    return r.status === 204;   // GitHub returns 204 No Content on success
+  }catch(e){ return false; }
+}
+
+/* ---------- submit ---------- */
+const flag = (id, bad) => { $(id).classList.toggle('invalid', bad); return !bad; };
+
+$('#submitBtn').addEventListener('click', async ()=>{
+  const name  = $('#name').value.trim();
+  const phone = $('#phone').value.replace(/\D/g,'');
+  let ok = true;
+  ok = flag('#fldName', name.length < 2) && ok;
+  ok = flag('#fldPhone', phone.length !== 10) && ok;
+  if(!ok){ document.querySelector('.field.invalid input').focus(); return; }
+
+  const going = state.attending === 'yes';
+  const rec = {
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+    ts: new Date().toISOString(),
+    event: CONFIG.eventName,
+    name, phone,
+    attending: state.attending,
+    guests: going ? state.guests : 0,
+    companions: going ? [...document.querySelectorAll('#companionList input')].map(i=>i.value.trim()).filter(Boolean) : [],
+    hasAllergy: going && state.hasAllergy,
+    allergies: going && state.hasAllergy ? picked('allergyChips') : [],
+    allergyNote: going && state.hasAllergy ? $('#allergyNote').value.trim() : '',
+    diet: going ? state.diet : '',
+    avoid: going ? picked('avoidChips') : [],
+    avoidNote: going ? $('#avoidNote').value.trim() : '',
+    note: $('#note').value.trim(),
+    synced: false
+  };
+
+  const btn = $('#submitBtn');
+  const label = btn.textContent;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>กำลังส่ง…';
+
+  rec.synced = await pushWebhook(rec);
+  await saveRecord(rec);
+
+  btn.disabled = false;
+  btn.textContent = label;
+  openSheet(rec);
+});
+
+/* ---------- sheet ---------- */
+function openSheet(rec){
+  const going = rec.attending === 'yes';
+  $('#sheetTitle').textContent = going ? 'ลงทะเบียนเรียบร้อย' : 'รับทราบคำตอบแล้ว';
+  $('#sheetSub').textContent = going ? 'แล้วพบกันที่ ' + CONFIG.venue
+                                     : 'ขอบคุณที่แจ้งให้ทราบ หวังว่าจะได้พบกันในโอกาสหน้า';
+  $('#goingOnly').style.display = going ? '' : 'none';
+
+  const rows = [['ชื่อ', rec.name], ['เบอร์โทร', $('#phone').value]];
+  if(going){
+    rows.push(['จำนวน', rec.guests + ' ท่าน']);
+    if(rec.companions && rec.companions.length) rows.push(['ผู้ติดตาม', rec.companions.join(', ')]);
+    rows.push(['วันเวลา', CONFIG.dateText + ' · ' + CONFIG.timeText]);
+    const al = [...rec.allergies, rec.allergyNote].filter(Boolean).join(', ');
+    if(al) rows.push(['แพ้อาหาร', al]);
+    if(rec.diet && rec.diet !== 'ทานได้ทุกอย่าง') rows.push(['รูปแบบอาหาร', rec.diet]);
+    const av = [...rec.avoid, rec.avoidNote].filter(Boolean).join(', ');
+    if(av) rows.push(['ไม่รับประทาน', av]);
+  }
+  $('#recap').innerHTML = rows.map(r=>`<div><span>${r[0]}</span><span>${esc(r[1])}</span></div>`).join('');
+  $('#gcal').href = gcalUrl();
+  $('#scrim').classList.add('show');
+  document.body.style.overflow = 'hidden';
+  $('#closeSheet').focus();
+}
+$('#closeSheet').addEventListener('click', closeSheet);
+$('#scrim').addEventListener('click', e=>{ if(e.target === $('#scrim')) closeSheet(); });
+document.addEventListener('keydown', e=>{ if(e.key === 'Escape' && $('#scrim').classList.contains('show')) closeSheet(); });
+function closeSheet(){
+  $('#scrim').classList.remove('show');
+  document.body.style.overflow = '';
+  $('#form').reset();
+  setGuests(1);
+  document.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed','false'));
+  document.querySelector('#dietChips .chip').click();
+  document.querySelector('[data-allergy="no"]').click();
+  document.querySelector('[data-attend="yes"]').click();
+  show('screen-landing');
+}
+
+/* ---------- calendar ---------- */
+const ua = navigator.userAgent;
+const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+const isInAppBrowser = /Line\/|FBAN|FBAV|Instagram|MicroMessenger/i.test(ua);
+
+const utc = iso => new Date(iso).toISOString().replace(/[-:]/g,'').split('.')[0] + 'Z';
+const calDetails = 'ที่จอดรถฟรี 2 จุด: หน้าร้าน PEPÉ Bangkok และอพาร์ตเมนต์ P.W.T. Mansion\n'
+  + 'แผนที่ร้าน: ' + CONFIG.mapUrl + '\nแผนที่ที่จอดรถ: ' + CONFIG.parkingUrl;
+
+function gcalUrl(){
+  const p = new URLSearchParams({
+    action:'TEMPLATE', text:CONFIG.eventName,
+    dates: utc(CONFIG.startISO)+'/'+utc(CONFIG.endISO),
+    details: calDetails, location: CONFIG.venue, ctz:'Asia/Bangkok'
+  });
+  return 'https://calendar.google.com/calendar/render?' + p.toString();
+}
+function buildIcs(){
+  return [
+    'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//SUITCUBE//An Evening with SUITCUBE//TH','CALSCALE:GREGORIAN','METHOD:PUBLISH',
+    'BEGIN:VEVENT','UID:'+Date.now()+'@pepe-bangkok','DTSTAMP:'+utc(new Date().toISOString()),
+    'DTSTART:'+utc(CONFIG.startISO),'DTEND:'+utc(CONFIG.endISO),
+    'SUMMARY:'+CONFIG.eventName,'LOCATION:'+CONFIG.venue,
+    'DESCRIPTION:'+calDetails.replace(/\n/g,'\\n'),'URL:'+CONFIG.mapUrl,
+    'BEGIN:VALARM','TRIGGER:-PT2H','ACTION:DISPLAY','DESCRIPTION:'+CONFIG.eventName,'END:VALARM',
+    'END:VEVENT','END:VCALENDAR'
+  ].join('\r\n');
+}
+function download(blob, filename){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
+}
+
+// iOS Safari opens the native "Add Event" sheet when navigated straight to a
+// base64 data: URI for a .ics file — a plain click/download does NOT trigger
+// that sheet, so the two platforms need genuinely different handling.
+if(isIOS){
+  $('#icsLabel').innerHTML = 'บันทึกลง Apple Calendar<small>สำหรับ iPhone และ iPad</small>';
+  $('#calAutoLabel').innerHTML = 'เพิ่มลงปฏิทิน<small>เปิดหน้าเพิ่มกิจกรรมของ iPhone</small>';
+} else {
+  $('#icsLabel').innerHTML = 'ดาวน์โหลดไฟล์ .ics<small>สำหรับ Outlook และปฏิทินอื่น ๆ</small>';
+  $('#calAutoLabel').innerHTML = 'เพิ่มลงปฏิทิน<small>เปิด Google Calendar ให้อัตโนมัติ</small>';
+}
+if(isInAppBrowser) $('#webviewHint').style.display = '';
+
+function addToCalendarIOS(){
+  const b64 = btoa(unescape(encodeURIComponent(buildIcs())));
+  window.location.href = 'data:text/calendar;charset=utf-8;base64,' + b64;
+}
+$('#calAuto').addEventListener('click', e=>{
+  e.preventDefault();
+  if(isIOS) addToCalendarIOS();
+  else window.location.href = gcalUrl();
+});
+$('#gcal').addEventListener('click', e=>{
+  e.preventDefault();
+  window.location.href = gcalUrl();
+});
+$('#icsBtn').addEventListener('click', e=>{
+  e.preventDefault();
+  if(isIOS) addToCalendarIOS();
+  else download(new Blob([buildIcs()],{type:'text/calendar;charset=utf-8'}), 'an-evening-with-suitcube.ics');
+});
+
+/* ---------- admin ---------- */
+async function renderAdmin(){
+  if(location.hash !== '#admin'){
+    if($('#screen-admin').classList.contains('on')) show('screen-landing');
+    return;
+  }
+  show('screen-admin');
+  const recs = await listRecords();
+  const going = recs.filter(r=>r.attending==='yes');
+  $('#stTotal').textContent   = recs.length;
+  $('#stGuest').textContent   = going.reduce((s,r)=>s+(r.guests||0),0);
+  $('#stAllergy').textContent = recs.filter(r=>r.hasAllergy).length;
+
+  $('#rows').innerHTML = recs.length ? recs.map(r=>{
+    const al = [...(r.allergies||[]), r.allergyNote].filter(Boolean).join(', ');
+    const av = [...(r.avoid||[]), r.avoidNote].filter(Boolean).join(', ');
+    return `<div class="row">
+      <div class="top"><b>${esc(r.name)}</b>
+      <span class="tag ${r.attending==='yes'?'':'no'}">${r.attending==='yes'? r.guests+' ท่าน':'ไม่สะดวก'}</span></div>
+      <div class="meta">${esc(r.phone)} · ${new Date(r.ts).toLocaleString('th-TH',{dateStyle:'short',timeStyle:'short'})}${r.synced?'':' · ยังไม่ส่งเข้าระบบ'}</div>
+      ${r.companions && r.companions.length?`<div class="meta">ผู้ติดตาม: ${esc(r.companions.join(', '))}</div>`:''}
+      ${al?`<div class="meta">แพ้: ${esc(al)}</div>`:''}
+      ${r.diet && r.diet!=='ทานได้ทุกอย่าง'?`<div class="meta">รูปแบบอาหาร: ${esc(r.diet)}</div>`:''}
+      ${av?`<div class="meta">ไม่ทาน: ${esc(av)}</div>`:''}
+      ${r.note?`<div class="meta">หมายเหตุ: ${esc(r.note)}</div>`:''}
+    </div>`;
+  }).join('') : '<p class="empty">ยังไม่มีผู้ลงทะเบียน</p>';
+}
+window.addEventListener('hashchange', renderAdmin);
+
+$('#btnCsv').addEventListener('click', async ()=>{
+  const recs = await listRecords();
+  const head = ['เวลาบันทึก','ชื่อ','เบอร์โทร','เข้าร่วม','จำนวน','ชื่อผู้ติดตาม','แพ้อาหาร','รายละเอียดที่แพ้','รูปแบบอาหาร','ไม่รับประทาน','หมายเหตุ','ส่งเข้าระบบ'];
+  const body = recs.map(r=>[
+    new Date(r.ts).toLocaleString('th-TH'), r.name, r.phone,
+    r.attending==='yes'?'เข้าร่วม':'ไม่สะดวก', r.guests,
+    (r.companions||[]).join(' / '), r.hasAllergy?'มี':'ไม่มี',
+    [...(r.allergies||[]), r.allergyNote].filter(Boolean).join(' / '), r.diet||'',
+    [...(r.avoid||[]), r.avoidNote].filter(Boolean).join(' / '),
+    r.note, r.synced?'สำเร็จ':'ค้าง'
+  ]);
+  const csv = [head, ...body].map(r=>r.map(c=>`"${String(c??'').replace(/"/g,'""')}"`).join(',')).join('\r\n');
+  download(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}), 'suitcube-dinner-guests.csv');
+});
+$('#btnResync').addEventListener('click', async ()=>{
+  if(!CONFIG.githubRepo || CONFIG.githubRepo.startsWith('REPLACE')){ alert('ยังไม่ได้ตั้งค่า githubRepo ในไฟล์'); return; }
+  const recs = await listRecords();
+  let n = 0;
+  for(const r of recs.filter(x=>!x.synced)){
+    if(await pushWebhook(r)){ r.synced = true; await saveRecord(r); n++; }
+  }
+  alert('ส่งสำเร็จ ' + n + ' รายการ');
+  renderAdmin();
+});
+$('#btnClear').addEventListener('click', async ()=>{
+  if(!confirm('ลบข้อมูลผู้ลงทะเบียนทั้งหมดในเครื่องนี้?')) return;
+  await clearRecords(); renderAdmin();
+});
+
+renderAdmin();
+</script>
+</body>
+</html>
