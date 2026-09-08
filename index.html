@@ -757,17 +757,6 @@ function gcalUrl(){
   });
   return 'https://calendar.google.com/calendar/render?' + p.toString();
 }
-function buildIcs(){
-  return [
-    'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//SUITCUBE//An Evening with SUITCUBE//TH','CALSCALE:GREGORIAN','METHOD:PUBLISH',
-    'BEGIN:VEVENT','UID:'+Date.now()+'@pepe-bangkok','DTSTAMP:'+utc(new Date().toISOString()),
-    'DTSTART:'+utc(CONFIG.startISO),'DTEND:'+utc(CONFIG.endISO),
-    'SUMMARY:'+CONFIG.eventName,'LOCATION:'+CONFIG.venue,
-    'DESCRIPTION:'+calDetails.replace(/\n/g,'\\n'),'URL:'+CONFIG.mapUrl,
-    'BEGIN:VALARM','TRIGGER:-PT2H','ACTION:DISPLAY','DESCRIPTION:'+CONFIG.eventName,'END:VALARM',
-    'END:VEVENT','END:VCALENDAR'
-  ].join('\r\n');
-}
 function download(blob, filename){
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob); a.download = filename;
@@ -775,9 +764,18 @@ function download(blob, filename){
   setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
 }
 
-// iOS Safari opens the native "Add Event" sheet when navigated straight to a
-// base64 data: URI for a .ics file — a plain click/download does NOT trigger
-// that sheet, so the two platforms need genuinely different handling.
+// A real https link to a hosted .ics file (served by the Worker) works as a
+// normal page navigation in every iOS browser and most in-app webviews —
+// unlike a JS-triggered data: URI, which only some of them allow.
+const icsUrl = (!CONFIG.webhookUrl || CONFIG.webhookUrl.startsWith('REPLACE'))
+  ? null
+  : CONFIG.webhookUrl.replace(/\/$/, '') + '/event.ics';
+
+if(icsUrl){
+  $('#icsBtn').href = icsUrl;
+} else {
+  $('#icsBtn').href = '#';
+}
 if(isIOS){
   $('#icsLabel').innerHTML = 'บันทึกลง Apple Calendar<small>สำหรับ iPhone และ iPad</small>';
 } else {
@@ -785,18 +783,9 @@ if(isIOS){
 }
 if(isInAppBrowser) $('#webviewHint').style.display = '';
 
-function addToCalendarIOS(){
-  const b64 = btoa(unescape(encodeURIComponent(buildIcs())));
-  window.location.href = 'data:text/calendar;charset=utf-8;base64,' + b64;
-}
 $('#gcal').addEventListener('click', e=>{
   e.preventDefault();
   window.location.href = gcalUrl();
-});
-$('#icsBtn').addEventListener('click', e=>{
-  e.preventDefault();
-  if(isIOS) addToCalendarIOS();
-  else download(new Blob([buildIcs()],{type:'text/calendar;charset=utf-8'}), 'an-evening-with-suitcube.ics');
 });
 
 /* ---------- admin ---------- */
