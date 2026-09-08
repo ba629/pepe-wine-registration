@@ -306,6 +306,14 @@ input:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{
         </div>
       </div>
 
+      <div class="field" id="personTabsField" style="display:none">
+        <span class="legend">ข้อมูลอาหารของ</span>
+        <div class="seg quiet" role="group" aria-label="เลือกคนที่กำลังกรอกข้อมูลอาหาร" id="personTabs">
+          <button type="button" data-person="0" aria-pressed="true">คุณ</button>
+          <button type="button" data-person="1" aria-pressed="false">ผู้ติดตาม</button>
+        </div>
+      </div>
+
       <div class="field">
         <span class="legend">มีอาการแพ้อาหารหรือไม่ <span class="req">*</span></span>
         <div class="seg quiet" role="group" aria-label="แพ้อาหาร">
@@ -450,7 +458,8 @@ const CONFIG = {
   githubToken: 'REPLACE_WITH_FINE_GRAINED_PAT'
 };
 
-const state = { attending:'yes', hasAllergy:false, guests:1, diet:'ทานได้ทุกอย่าง' };
+function defaultFood(){ return { hasAllergy:false, allergies:[], allergyNote:'', diet:'ทานได้ทุกอย่าง', avoid:[], avoidNote:'' }; }
+const state = { attending:'yes', guests:1, activePerson:0, food:[defaultFood(), defaultFood()] };
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
@@ -487,10 +496,6 @@ bindSeg('[data-attend]', b=>{
   $('#attendBlock').style.display = on ? '' : 'none';
   $('#submitBtn').textContent = on ? 'ยืนยันการลงทะเบียน' : 'ส่งคำตอบ';
 });
-bindSeg('[data-allergy]', b=>{
-  state.hasAllergy = b.dataset.allergy === 'yes';
-  $('#allergyBox').classList.toggle('open', state.hasAllergy);
-});
 
 /* ---------- stepper ---------- */
 function renderCompanions(){
@@ -504,10 +509,22 @@ function renderCompanions(){
     inp.placeholder = 'ชื่อผู้ติดตาม';
     inp.value = kept[i] || '';
     inp.style.marginBottom = '8px';
+    inp.addEventListener('input', updatePersonTabLabels);
     list.appendChild(inp);
   }
   $('#companionBox').classList.toggle('open', need > 0);
+  $('#personTabsField').style.display = need > 0 ? '' : 'none';
+  if(need === 0 && state.activePerson !== 0) switchPerson(0);
+  updatePersonTabLabels();
 }
+function updatePersonTabLabels(){
+  const name = $('#name').value.trim();
+  const companionInp = $('#companionList input');
+  const companion = companionInp ? companionInp.value.trim() : '';
+  document.querySelector('[data-person="0"]').textContent = name ? 'คุณ ' + name : 'คุณ';
+  document.querySelector('[data-person="1"]').textContent = companion ? 'คุณ ' + companion : 'ผู้ติดตาม';
+}
+$('#name').addEventListener('input', updatePersonTabLabels);
 function setGuests(n){
   state.guests = Math.min(2, Math.max(1, n));
   $('#guests').textContent = state.guests;
@@ -520,18 +537,52 @@ $('#plus').addEventListener('click',()=>setGuests(state.guests+1));
 setGuests(1);
 
 /* ---------- chips + phone mask ---------- */
-document.querySelectorAll('.chip').forEach(c=>{
-  if(c.closest('#dietChips')) return;   // diet is single-select, handled below
-  c.addEventListener('click',()=>c.setAttribute('aria-pressed', c.getAttribute('aria-pressed')==='true'?'false':'true'));
+function renderFoodUI(idx){
+  const f = state.food[idx];
+  // allergy yes/no
+  document.querySelectorAll('[data-allergy]').forEach(b=>b.setAttribute('aria-pressed', String((b.dataset.allergy==='yes') === f.hasAllergy)));
+  $('#allergyBox').classList.toggle('open', f.hasAllergy);
+  // allergy chips
+  document.querySelectorAll('#allergyChips .chip').forEach(c=>c.setAttribute('aria-pressed', String(f.allergies.includes(c.textContent.trim()))));
+  $('#allergyNote').value = f.allergyNote;
+  // diet chips
+  document.querySelectorAll('#dietChips .chip').forEach(c=>c.setAttribute('aria-pressed', String(c.textContent.trim() === f.diet)));
+  // avoid chips
+  document.querySelectorAll('#avoidChips .chip').forEach(c=>c.setAttribute('aria-pressed', String(f.avoid.includes(c.textContent.trim()))));
+  $('#avoidNote').value = f.avoidNote;
+}
+function switchPerson(idx){
+  state.activePerson = idx;
+  document.querySelectorAll('#personTabs [data-person]').forEach(b=>b.setAttribute('aria-pressed', String(Number(b.dataset.person) === idx)));
+  renderFoodUI(idx);
+}
+document.querySelectorAll('#personTabs [data-person]').forEach(b=>{
+  b.addEventListener('click', ()=>switchPerson(Number(b.dataset.person)));
+});
+
+bindSeg('[data-allergy]', b=>{
+  const f = state.food[state.activePerson];
+  f.hasAllergy = b.dataset.allergy === 'yes';
+  $('#allergyBox').classList.toggle('open', f.hasAllergy);
+});
+document.querySelectorAll('#allergyChips .chip, #avoidChips .chip').forEach(c=>{
+  c.addEventListener('click',()=>{
+    const pressed = c.getAttribute('aria-pressed') === 'true';
+    c.setAttribute('aria-pressed', String(!pressed));
+    const f = state.food[state.activePerson];
+    const containerId = c.closest('#allergyChips') ? 'allergies' : 'avoid';
+    f[containerId] = [...document.querySelectorAll('#' + (containerId==='allergies'?'allergyChips':'avoidChips') + ' .chip[aria-pressed=true]')].map(x=>x.textContent.trim());
+  });
 });
 document.querySelectorAll('#dietChips .chip').forEach(c=>{
   c.addEventListener('click',()=>{
     document.querySelectorAll('#dietChips .chip').forEach(x=>x.setAttribute('aria-pressed','false'));
     c.setAttribute('aria-pressed','true');
-    state.diet = c.textContent.trim();
+    state.food[state.activePerson].diet = c.textContent.trim();
   });
 });
-const picked = id => [...document.querySelectorAll('#'+id+' .chip[aria-pressed=true]')].map(c=>c.textContent.trim());
+$('#allergyNote').addEventListener('input', e=>{ state.food[state.activePerson].allergyNote = e.target.value; });
+$('#avoidNote').addEventListener('input', e=>{ state.food[state.activePerson].avoidNote = e.target.value; });
 
 $('#phone').addEventListener('input', e=>{
   const d = e.target.value.replace(/\D/g,'').slice(0,10);
@@ -600,6 +651,9 @@ $('#submitBtn').addEventListener('click', async ()=>{
   if(!ok){ document.querySelector('.field.invalid input').focus(); return; }
 
   const going = state.attending === 'yes';
+  const self = state.food[0];
+  const companion = state.food[1];
+  const hasCompanion = going && state.guests === 2;
   const rec = {
     id: Date.now().toString(36) + Math.random().toString(36).slice(2,6),
     ts: new Date().toISOString(),
@@ -608,12 +662,18 @@ $('#submitBtn').addEventListener('click', async ()=>{
     attending: state.attending,
     guests: going ? state.guests : 0,
     companions: going ? [...document.querySelectorAll('#companionList input')].map(i=>i.value.trim()).filter(Boolean) : [],
-    hasAllergy: going && state.hasAllergy,
-    allergies: going && state.hasAllergy ? picked('allergyChips') : [],
-    allergyNote: going && state.hasAllergy ? $('#allergyNote').value.trim() : '',
-    diet: going ? state.diet : '',
-    avoid: going ? picked('avoidChips') : [],
-    avoidNote: going ? $('#avoidNote').value.trim() : '',
+    hasAllergy: going && self.hasAllergy,
+    allergies: going && self.hasAllergy ? self.allergies : [],
+    allergyNote: going && self.hasAllergy ? self.allergyNote.trim() : '',
+    diet: going ? self.diet : '',
+    avoid: going ? self.avoid : [],
+    avoidNote: going ? self.avoidNote.trim() : '',
+    hasAllergyCompanion: hasCompanion && companion.hasAllergy,
+    allergiesCompanion: hasCompanion && companion.hasAllergy ? companion.allergies : [],
+    allergyNoteCompanion: hasCompanion && companion.hasAllergy ? companion.allergyNote.trim() : '',
+    dietCompanion: hasCompanion ? companion.diet : '',
+    avoidCompanion: hasCompanion ? companion.avoid : [],
+    avoidNoteCompanion: hasCompanion ? companion.avoidNote.trim() : '',
     note: $('#note').value.trim(),
     synced: false
   };
@@ -645,11 +705,25 @@ function openSheet(rec){
     rows.push(['จำนวน', rec.guests + ' ท่าน']);
     rows.push(['โทร', $('#phone').value]);
     rows.push(['วันเวลา', CONFIG.dateText + ' · ' + CONFIG.timeText]);
+
     const al = [...rec.allergies, rec.allergyNote].filter(Boolean).join(', ');
-    if(al) rows.push(['แพ้อาหาร', al]);
-    if(rec.diet && rec.diet !== 'ทานได้ทุกอย่าง') rows.push(['รูปแบบอาหาร', rec.diet]);
     const av = [...rec.avoid, rec.avoidNote].filter(Boolean).join(', ');
-    if(av) rows.push(['ไม่รับประทาน', av]);
+    const hasCompanionFood = rec.companions && rec.companions.length > 0;
+    const selfLabel = hasCompanionFood ? `แพ้อาหาร (${rec.name})` : 'แพ้อาหาร';
+    const dietLabel = hasCompanionFood ? `รูปแบบอาหาร (${rec.name})` : 'รูปแบบอาหาร';
+    const avoidLabel = hasCompanionFood ? `ไม่รับประทาน (${rec.name})` : 'ไม่รับประทาน';
+    if(al) rows.push([selfLabel, al]);
+    if(rec.diet && rec.diet !== 'ทานได้ทุกอย่าง') rows.push([dietLabel, rec.diet]);
+    if(av) rows.push([avoidLabel, av]);
+
+    if(hasCompanionFood){
+      const cName = rec.companions[0];
+      const cal = [...(rec.allergiesCompanion||[]), rec.allergyNoteCompanion].filter(Boolean).join(', ');
+      const cav = [...(rec.avoidCompanion||[]), rec.avoidNoteCompanion].filter(Boolean).join(', ');
+      if(cal) rows.push([`แพ้อาหาร (${cName})`, cal]);
+      if(rec.dietCompanion && rec.dietCompanion !== 'ทานได้ทุกอย่าง') rows.push([`รูปแบบอาหาร (${cName})`, rec.dietCompanion]);
+      if(cav) rows.push([`ไม่รับประทาน (${cName})`, cav]);
+    }
   } else {
     rows.push(['โทร', $('#phone').value]);
   }
@@ -666,10 +740,9 @@ function closeSheet(){
   $('#scrim').classList.remove('show');
   document.body.style.overflow = '';
   $('#form').reset();
+  state.food = [defaultFood(), defaultFood()];
   setGuests(1);
-  document.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed','false'));
-  document.querySelector('#dietChips .chip').click();
-  document.querySelector('[data-allergy="no"]').click();
+  switchPerson(0);
   document.querySelector('[data-attend="yes"]').click();
   show('screen-landing');
 }
@@ -749,14 +822,22 @@ async function renderAdmin(){
   $('#rows').innerHTML = recs.length ? recs.map(r=>{
     const al = [...(r.allergies||[]), r.allergyNote].filter(Boolean).join(', ');
     const av = [...(r.avoid||[]), r.avoidNote].filter(Boolean).join(', ');
+    const hasC = r.companions && r.companions.length;
+    const cName = hasC ? r.companions[0] : '';
+    const cal = [...(r.allergiesCompanion||[]), r.allergyNoteCompanion].filter(Boolean).join(', ');
+    const cav = [...(r.avoidCompanion||[]), r.avoidNoteCompanion].filter(Boolean).join(', ');
+    const selfTag = hasC ? ` (${esc(r.name)})` : '';
     return `<div class="row">
       <div class="top"><b>${esc(r.name)}</b>
       <span class="tag ${r.attending==='yes'?'':'no'}">${r.attending==='yes'? r.guests+' ท่าน':'ไม่สะดวก'}</span></div>
       <div class="meta">${esc(r.phone)} · ${new Date(r.ts).toLocaleString('th-TH',{dateStyle:'short',timeStyle:'short'})}${r.synced?'':' · ยังไม่ส่งเข้าระบบ'}</div>
-      ${r.companions && r.companions.length?`<div class="meta">ผู้ติดตาม: ${esc(r.companions.join(', '))}</div>`:''}
-      ${al?`<div class="meta">แพ้: ${esc(al)}</div>`:''}
-      ${r.diet && r.diet!=='ทานได้ทุกอย่าง'?`<div class="meta">รูปแบบอาหาร: ${esc(r.diet)}</div>`:''}
-      ${av?`<div class="meta">ไม่ทาน: ${esc(av)}</div>`:''}
+      ${hasC?`<div class="meta">ผู้ติดตาม: ${esc(r.companions.join(', '))}</div>`:''}
+      ${al?`<div class="meta">แพ้${selfTag}: ${esc(al)}</div>`:''}
+      ${r.diet && r.diet!=='ทานได้ทุกอย่าง'?`<div class="meta">รูปแบบอาหาร${selfTag}: ${esc(r.diet)}</div>`:''}
+      ${av?`<div class="meta">ไม่ทาน${selfTag}: ${esc(av)}</div>`:''}
+      ${cal?`<div class="meta">แพ้ (${esc(cName)}): ${esc(cal)}</div>`:''}
+      ${r.dietCompanion && r.dietCompanion!=='ทานได้ทุกอย่าง'?`<div class="meta">รูปแบบอาหาร (${esc(cName)}): ${esc(r.dietCompanion)}</div>`:''}
+      ${cav?`<div class="meta">ไม่ทาน (${esc(cName)}): ${esc(cav)}</div>`:''}
       ${r.note?`<div class="meta">หมายเหตุ: ${esc(r.note)}</div>`:''}
     </div>`;
   }).join('') : '<p class="empty">ยังไม่มีผู้ลงทะเบียน</p>';
@@ -765,13 +846,16 @@ window.addEventListener('hashchange', renderAdmin);
 
 $('#btnCsv').addEventListener('click', async ()=>{
   const recs = await listRecords();
-  const head = ['เวลาบันทึก','ชื่อ','เบอร์โทร','เข้าร่วม','จำนวน','ชื่อผู้ติดตาม','แพ้อาหาร','รายละเอียดที่แพ้','รูปแบบอาหาร','ไม่รับประทาน','หมายเหตุ','ส่งเข้าระบบ'];
+  const head = ['เวลาบันทึก','ชื่อ','เบอร์โทร','เข้าร่วม','จำนวน','ชื่อผู้ติดตาม',
+    'แพ้อาหาร (เจ้าตัว)','รายละเอียดที่แพ้ (เจ้าตัว)','รูปแบบอาหาร (เจ้าตัว)','ไม่รับประทาน (เจ้าตัว)',
+    'แพ้อาหาร (ผู้ติดตาม)','รายละเอียดที่แพ้ (ผู้ติดตาม)','รูปแบบอาหาร (ผู้ติดตาม)','ไม่รับประทาน (ผู้ติดตาม)',
+    'หมายเหตุ','ส่งเข้าระบบ'];
   const body = recs.map(r=>[
     new Date(r.ts).toLocaleString('th-TH'), r.name, r.phone,
     r.attending==='yes'?'เข้าร่วม':'ไม่สะดวก', r.guests,
-    (r.companions||[]).join(' / '), r.hasAllergy?'มี':'ไม่มี',
-    [...(r.allergies||[]), r.allergyNote].filter(Boolean).join(' / '), r.diet||'',
-    [...(r.avoid||[]), r.avoidNote].filter(Boolean).join(' / '),
+    (r.companions||[]).join(' / '),
+    r.hasAllergy?'มี':'ไม่มี', [...(r.allergies||[]), r.allergyNote].filter(Boolean).join(' / '), r.diet||'', (r.avoid||[]).concat(r.avoidNote?[r.avoidNote]:[]).join(' / '),
+    r.hasAllergyCompanion?'มี':(r.companions&&r.companions.length?'ไม่มี':''), [...(r.allergiesCompanion||[]), r.allergyNoteCompanion].filter(Boolean).join(' / '), r.dietCompanion||'', (r.avoidCompanion||[]).concat(r.avoidNoteCompanion?[r.avoidNoteCompanion]:[]).join(' / '),
     r.note, r.synced?'สำเร็จ':'ค้าง'
   ]);
   const csv = [head, ...body].map(r=>r.map(c=>`"${String(c??'').replace(/"/g,'""')}"`).join(',')).join('\r\n');
