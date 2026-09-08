@@ -395,12 +395,6 @@ input:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{
 
     <div id="goingOnly">
       <h3>บันทึกวันงานลงปฏิทิน</h3>
-      <a class="act" id="calAuto" href="#" style="border-color:var(--wine-2);background:#FBEFF1">
-        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M8 3v4M16 3v4M3 10h18M12 13v5M9.5 15.5h5"/></svg>
-        <div id="calAutoLabel">เพิ่มลงปฏิทิน<small>ระบบเลือกวิธีที่เหมาะกับเครื่องคุณให้แล้ว</small></div>
-        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M9 5l7 7-7 7" stroke-linecap="round"/></svg>
-      </a>
-      <p class="hint" style="margin:2px 0 14px">หรือเลือกเองด้านล่าง</p>
       <a class="act" id="gcal" href="#">
         <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2.5"/><path d="M8 3v4M16 3v4M3 10h18M12 13v5M9.5 15.5h5"/></svg>
         <div>เพิ่มลง Google Calendar<small>เปิดหน้านี้เพื่อเพิ่มลงปฏิทิน</small></div>
@@ -645,16 +639,19 @@ function openSheet(rec){
                                      : 'ขอบคุณที่แจ้งให้ทราบ หวังว่าจะได้พบกันในโอกาสหน้า';
   $('#goingOnly').style.display = going ? '' : 'none';
 
-  const rows = [['ชื่อ', rec.name], ['เบอร์โทร', $('#phone').value]];
+  const rows = [['คุณ', rec.name]];
   if(going){
+    if(rec.companions && rec.companions.length) rows.push(['คุณ', rec.companions.join(', ')]);
     rows.push(['จำนวน', rec.guests + ' ท่าน']);
-    if(rec.companions && rec.companions.length) rows.push(['ผู้ติดตาม', rec.companions.join(', ')]);
+    rows.push(['โทร', $('#phone').value]);
     rows.push(['วันเวลา', CONFIG.dateText + ' · ' + CONFIG.timeText]);
     const al = [...rec.allergies, rec.allergyNote].filter(Boolean).join(', ');
     if(al) rows.push(['แพ้อาหาร', al]);
     if(rec.diet && rec.diet !== 'ทานได้ทุกอย่าง') rows.push(['รูปแบบอาหาร', rec.diet]);
     const av = [...rec.avoid, rec.avoidNote].filter(Boolean).join(', ');
     if(av) rows.push(['ไม่รับประทาน', av]);
+  } else {
+    rows.push(['โทร', $('#phone').value]);
   }
   $('#recap').innerHTML = rows.map(r=>`<div><span>${r[0]}</span><span>${esc(r[1])}</span></div>`).join('');
   $('#gcal').href = gcalUrl();
@@ -717,10 +714,8 @@ function download(blob, filename){
 // that sheet, so the two platforms need genuinely different handling.
 if(isIOS){
   $('#icsLabel').innerHTML = 'บันทึกลง Apple Calendar<small>สำหรับ iPhone และ iPad</small>';
-  $('#calAutoLabel').innerHTML = 'เพิ่มลงปฏิทิน<small>เปิดหน้าเพิ่มกิจกรรมของ iPhone</small>';
 } else {
   $('#icsLabel').innerHTML = 'ดาวน์โหลดไฟล์ .ics<small>สำหรับ Outlook และปฏิทินอื่น ๆ</small>';
-  $('#calAutoLabel').innerHTML = 'เพิ่มลงปฏิทิน<small>เปิด Google Calendar ให้อัตโนมัติ</small>';
 }
 if(isInAppBrowser) $('#webviewHint').style.display = '';
 
@@ -728,11 +723,6 @@ function addToCalendarIOS(){
   const b64 = btoa(unescape(encodeURIComponent(buildIcs())));
   window.location.href = 'data:text/calendar;charset=utf-8;base64,' + b64;
 }
-$('#calAuto').addEventListener('click', e=>{
-  e.preventDefault();
-  if(isIOS) addToCalendarIOS();
-  else window.location.href = gcalUrl();
-});
 $('#gcal').addEventListener('click', e=>{
   e.preventDefault();
   window.location.href = gcalUrl();
